@@ -1,77 +1,117 @@
 import { useState, useRef, useEffect } from 'react';
-import { Track, AudioPlayerState } from '../types/audio';
+import { Track } from '../types/audio';
+
+interface TrackState {
+  isPlaying: boolean;
+  volume: number;
+  playbackRate: number;
+  pitch: number;
+}
 
 export const useAudioPlayer = () => {
-  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
-  const [state, setState] = useState<AudioPlayerState>({
-    isPlaying: false,
-    currentTime: 0,
-    duration: 0,
-    playbackRate: 1,
-    pitch: 0
-  });
+  const [trackStates, setTrackStates] = useState<Map<number, TrackState>>(new Map());
+  const audioRefs = useRef<Map<number, HTMLAudioElement>>(new Map());
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.playbackRate = state.playbackRate;
-    }
-  }, [state.playbackRate]);
-
-  const handlePlay = () => {
-    if (audioRef.current) {
-      audioRef.current.play();
-      setState(prev => ({ ...prev, isPlaying: true }));
-    }
-  };
-
-  const handlePause = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setState(prev => ({ ...prev, isPlaying: false }));
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setState(prev => ({
-        ...prev,
-        currentTime: audioRef.current!.currentTime,
-        duration: audioRef.current!.duration
+  const initializeTrack = (trackId: number) => {
+    if (!trackStates.has(trackId)) {
+      setTrackStates(prev => new Map(prev).set(trackId, {
+        isPlaying: false,
+        volume: 1,
+        playbackRate: 1,
+        pitch: 0
       }));
     }
   };
 
-  const handleTrackSelect = (track: Track) => {
-    setCurrentTrack(track);
-    setState(prev => ({ ...prev, isPlaying: true }));
-  };
-
-  const handleSeek = (time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
+  const handlePlay = (trackId: number) => {
+    const audio = audioRefs.current.get(trackId);
+    if (audio) {
+      audio.play();
+      setTrackStates(prev => {
+        const newStates = new Map(prev);
+        newStates.set(trackId, { 
+          ...newStates.get(trackId)!,
+          isPlaying: true 
+        });
+        return newStates;
+      });
     }
   };
 
-  const handlePlaybackRateChange = (rate: number) => {
-    setState(prev => ({ ...prev, playbackRate: rate }));
+  const handlePause = (trackId: number) => {
+    const audio = audioRefs.current.get(trackId);
+    if (audio) {
+      audio.pause();
+      setTrackStates(prev => {
+        const newStates = new Map(prev);
+        newStates.set(trackId, { 
+          ...newStates.get(trackId)!,
+          isPlaying: false 
+        });
+        return newStates;
+      });
+    }
   };
 
-  const handlePitchChange = (pitch: number) => {
-    setState(prev => ({ ...prev, pitch }));
+  const handleVolumeChange = (trackId: number, volume: number) => {
+    const audio = audioRefs.current.get(trackId);
+    if (audio) {
+      audio.volume = volume;
+      setTrackStates(prev => {
+        const newStates = new Map(prev);
+        newStates.set(trackId, { 
+          ...newStates.get(trackId)!,
+          volume 
+        });
+        return newStates;
+      });
+    }
+  };
+
+  const handlePlaybackRateChange = (trackId: number, rate: number) => {
+    const audio = audioRefs.current.get(trackId);
+    if (audio) {
+      audio.playbackRate = rate;
+      setTrackStates(prev => {
+        const newStates = new Map(prev);
+        newStates.set(trackId, { 
+          ...newStates.get(trackId)!,
+          playbackRate: rate 
+        });
+        return newStates;
+      });
+    }
+  };
+
+  const handlePitchChange = (trackId: number, pitch: number) => {
+    setTrackStates(prev => {
+      const newStates = new Map(prev);
+      newStates.set(trackId, { 
+        ...newStates.get(trackId)!,
+        pitch 
+      });
+      return newStates;
+    });
+  };
+
+  const getTrackState = (trackId: number) => {
+    return trackStates.get(trackId) || {
+      isPlaying: false,
+      volume: 1,
+      playbackRate: 1,
+      pitch: 0
+    };
   };
 
   return {
-    audioRef,
-    currentTrack,
-    state,
+    audioRefs,
+    trackStates,
+    initializeTrack,
     handlePlay,
     handlePause,
-    handleTimeUpdate,
-    handleTrackSelect,
-    handleSeek,
+    handleVolumeChange,
     handlePlaybackRateChange,
-    handlePitchChange
+    handlePitchChange,
+    getTrackState
   };
 };
