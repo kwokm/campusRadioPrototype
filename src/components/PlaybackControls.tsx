@@ -3,7 +3,7 @@ import React from 'react';
 interface PlaybackControlsProps {
   playbackRate: number;
   pitch: number;
-  onPlaybackRateChange: (rate: number) => void;
+  ognPlaybackRateChange: (rate: number) => void;
   onPitchChange: (pitch: number) => void;
 }
 
@@ -16,7 +16,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   return (
     <div className="flex flex-col space-y-4 w-full max-w-md">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block mb-1 text-sm font-medium text-gray-700">
           Playback Speed: {playbackRate.toFixed(1)}x
         </label>
         <input
@@ -30,7 +30,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block mb-1 text-sm font-medium text-gray-700">
           Pitch Adjustment: {pitch.toFixed(1)}
         </label>
         <input

@@ -41,7 +41,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
         </div>
         <div className="text-center">
           <h3 className="font-medium text-gray-900">{track.title}</h3>
-          <p className="text-sm text-gray-500">{track.artist}</p>
+        {/* <p className="text-sm text-gray-500">{track.artist}</p> */}
         </div>
       </div>
 
