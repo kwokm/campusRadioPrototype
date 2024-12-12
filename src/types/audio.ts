@@ -3,6 +3,7 @@ export interface Track {
   title: string;
   url: string;
   artist: string;
+  icon: string;
 }
 
 export interface AudioPlayerState {
