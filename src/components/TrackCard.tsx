@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Music, Play, Pause, Settings2, Volume2 } from 'lucide-react';
+import React from 'react';
+import {Play, Pause, Settings2} from 'lucide-react';
 import { Track } from '../types/audio';
 
 interface TrackCardProps {
