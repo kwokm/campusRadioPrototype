@@ -4,26 +4,29 @@ import { TrackCard } from './TrackCard';
 
 interface TrackListProps {
   tracks: Track[];
-  currentTrack: Track | null;
-  isPlaying: boolean;
-  playbackRate: number;
-  pitch: number;
-  onTrackSelect: (track: Track) => void;
-  onPlayPause: () => void;
-  onPlaybackRateChange: (rate: number) => void;
-  onPitchChange: (pitch: number) => void;
+  getTrackState: (trackId: number) => {
+    isPlaying: boolean;
+    volume: number;
+    playbackRate: number;
+    pitch: number;
+  };
+  audioRefs: React.MutableRefObject<Map<number, HTMLAudioElement>>;
+  onPlay: (trackId: number) => void;
+  onPause: (trackId: number) => void;
+  onVolumeChange: (trackId: number, volume: number) => void;
+  onPlaybackRateChange: (trackId: number, rate: number) => void;
+  onPitchChange: (trackId: number, pitch: number) => void;
 }
 
 export const TrackList: React.FC<TrackListProps> = ({
   tracks,
-  currentTrack,
-  isPlaying,
-  playbackRate,
-  pitch,
-  onTrackSelect,
-  onPlayPause,
+  getTrackState,
+  audioRefs,
+  onPlay,
+  onPause,
+  onVolumeChange,
   onPlaybackRateChange,
-  onPitchChange,
+  onPitchChange
 }) => {
   return (
     <div className="grid grid-cols-3 gap-4">
@@ -31,14 +34,18 @@ export const TrackList: React.FC<TrackListProps> = ({
         <TrackCard
           key={track.id}
           track={track}
-          isPlaying={isPlaying}
-          isSelected={currentTrack?.id === track.id}
-          playbackRate={playbackRate}
-          pitch={pitch}
-          onSelect={onTrackSelect}
-          onPlayPause={onPlayPause}
-          onPlaybackRateChange={onPlaybackRateChange}
-          onPitchChange={onPitchChange}
+          trackState={getTrackState(track.id)}
+          audioRef={(element) => {
+            if (element) {
+              audioRefs.current.set(track.id, element);
+            }
+          }}
+          onPlay={() => onPlay(track.id)}
+          onPause={() => onPause(track.id)}
+          onVolumeChange={(volume) => onVolumeChange(track.id, volume)}
+          onPlaybackRateChange={(rate) => onPlaybackRateChange(track.id, rate)}
+          onPitchChange={(pitch) => onPitchChange(track.id, pitch)}
+          onPlayPause={() => (getTrackState(track.id).isPlaying ? onPause(track.id) : onPlay(track.id))}
         />
       ))}
     </div>

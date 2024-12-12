@@ -3,7 +3,7 @@ import React from 'react';
 interface PlaybackControlsProps {
   playbackRate: number;
   pitch: number;
-  ognPlaybackRateChange: (rate: number) => void;
+  onPlaybackRateChange: (rate: number) => void;
   onPitchChange: (pitch: number) => void;
 }
 

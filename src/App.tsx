@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { tracks } from './data/tracks';
-import { TrackCard } from './components/TrackCard';
+import { TrackList } from './components/TrackList';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
 
 function App() {
@@ -24,25 +24,16 @@ function App() {
       <div className="px-4 mx-auto max-w-7xl">
         <h1 className="mb-8 text-3xl font-bold text-center">Ambient Mixer</h1>
         
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {tracks.map((track) => (
-            <TrackCard
-              key={track.id}
-              track={track}
-              trackState={getTrackState(track.id)}
-              audioRef={(element) => {
-                if (element) {
-                  audioRefs.current.set(track.id, element);
-                }
-              }}
-              onPlay={() => handlePlay(track.id)}
-              onPause={() => handlePause(track.id)}
-              onVolumeChange={(volume) => handleVolumeChange(track.id, volume)}
-              onPlaybackRateChange={(rate) => handlePlaybackRateChange(track.id, rate)}
-              onPitchChange={(pitch) => handlePitchChange(track.id, pitch)}
-            />
-          ))}
-        </div>
+        <TrackList
+          tracks={tracks}
+          getTrackState={getTrackState}
+          audioRefs={audioRefs}
+          onPlay={handlePlay}
+          onPause={handlePause}
+          onVolumeChange={handleVolumeChange}
+          onPlaybackRateChange={handlePlaybackRateChange}
+          onPitchChange={handlePitchChange}
+        />
       </div>
     </div>
   );

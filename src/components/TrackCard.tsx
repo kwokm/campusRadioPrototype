@@ -16,6 +16,7 @@ interface TrackCardProps {
   onVolumeChange: (volume: number) => void;
   onPlaybackRateChange: (rate: number) => void;
   onPitchChange: (pitch: number) => void;
+  onPlayPause: () => void;
 }
 
 export const TrackCard: React.FC<TrackCardProps> = ({
@@ -29,7 +30,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
   onPitchChange,
 }) => {
   const [showControls, setShowControls] = React.useState(true);
-  const { isPlaying, volume, playbackRate, pitch } = trackState;
+  const { volume, playbackRate, pitch } = trackState;
 
   return (
     <div className="p-4 space-y-4 bg-white rounded-lg shadow-sm">
@@ -48,10 +49,10 @@ export const TrackCard: React.FC<TrackCardProps> = ({
       <div className="space-y-3">
         <div className="flex justify-center space-x-2">
           <button
-            onClick={isPlaying ? onPause : onPlay}
+            onClick={trackState.isPlaying ? onPause : onPlay}
             className="p-2 text-white bg-blue-500 rounded-full transition-colors hover:bg-blue-600"
           >
-            {isPlaying ? (
+            {trackState.isPlaying ? (
               <Pause className="w-5 h-5" />
             ) : (
               <Play className="w-5 h-5" />
